@@ -29,9 +29,7 @@ function _init()
  t=0 
  
  -- player
- angspd=60
- pcolors={9,12,11,8}
- pbtns={4,5,2,3}
+ pcon={spd=60,aspd=60,col={9,12,11,8},btn={4,5,2,3}}
  players={}
  players[1]=player(1,63,63)
   
@@ -77,26 +75,70 @@ end
 function player(id,x,y)
 p={}
 p.id=id
-p.color=pcolors[id]
+p.color=pcon.col[id]
 p.spr=32
+p.sx=p.spr%16*8
+p.sy=flr(p.spr/16)*8
 p.x=x
 p.y=y
 p.a=0
-p.btn=pbtns[id]
+p.btn=pcon.btn[id]
+p.cur=nil
+p.spd=function(dt) return pcon.spd*dt end
 return p
+end
+
+function cursor(x,y)
+ c={}
+ c.x=x
+ c.y=y
+ c.spr=33
+ c.sx=c.spr%16*8
+ c.sy=flr(c.spr/16)*8
+ return c
 end
 
 function updateplayer(dt,p)  
  if (status=="lost") return
  
- p.a+=1/360*dt*angspd
- p.a=p.a%1
+ if(btn(p.btn)) then
+  if(p.cur) then
+    movecursor(dt,p)
+  else
+   p.cur=cursor(p.x,p.y)
+  end
+ else
+  if(p.cur) then
+   p.x=p.cur.x
+   p.y=p.cur.y 
+   p.cur=nil
+  end
+  p.a+=1/360*dt*pcon.aspd
+  p.a=p.a%1
+ end
+end
 
+function movecursor(dt,p)
+    local ang=(p.a+.5)%1
+    local dx,dy=sin(ang)*p.spd(dt), cos(ang)*p.spd(dt)
+    local nx,ny=p.cur.x+dx, p.cur.y+dy
+    if(isonscrn(nx,ny)) then
+     p.cur.x=nx
+     p.cur.y=ny
+    end
+end
+
+function isonscrn(x,y)
+ return x>-1 and x<121 and y>-1 and y<121 
 end
 
 function drawplayer(p)
-    rspr(p.spr%16,flr(p.spr/16)*8,p.x,p.y,p.a,1,p.color)
-    print(p.a,p.x,p.y+8)
+ rspr(p.sx,p.sy,p.x,p.y,p.a,1,p.color)
+ if(p.cur) then
+  print("Cursor!")
+  rspr(p.cur.sx,p.cur.sy,p.cur.x,p.cur.y,0,1,p.color)
+ end
+ print(p.a,p.x,p.y+8)
 end
 
 function rspr(sx,sy,x,y,a,w,col)
