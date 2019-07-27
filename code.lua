@@ -29,14 +29,13 @@ function _init()
  t=0 
  
  -- player
- pcon={spd=60,aspd=60,col={9,12,11,8},btn={4,5,2,3}}
+ pcon={spd=60,aspd=60,col={9,12,11,8,14},btn={4,5,0,1,2},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
  players={}
- players[1]=player(1,63,63)
-  
- -- obstacle
- ow=1+flr(rnd(3))
- oh=4-ow
- ox=240+flr(rnd(10))*8
+ local nplayers=difficulty%5
+ for i=1,ceil(difficulty/3) do
+  players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
+ end 
+
 end
 
 function _update60()
@@ -135,10 +134,9 @@ end
 function drawplayer(p)
  rspr(p.sx,p.sy,p.x,p.y,p.a,1,p.color)
  if(p.cur) then
-  print("Cursor!")
   rspr(p.cur.sx,p.cur.sy,p.cur.x,p.cur.y,0,1,p.color)
  end
- print(p.a,p.x,p.y+8)
+--  print(p.a,p.x,p.y+8)
 end
 
 function rspr(sx,sy,x,y,a,w,col)
