@@ -15,8 +15,8 @@ function _init()
  oneliner="Reach the goals! 🅾️"
  
  -- add a personal touch ◆
- outer_frame_color=12
- inner_frame_color=7
+ outer_frame_color=2
+ inner_frame_color=8
 
  --[[
   set status variable to inform
@@ -26,7 +26,7 @@ function _init()
  ]]--
  status="lost"
  over=false
-
+ brdr=3
  t=0 
  
  -- player
@@ -34,11 +34,10 @@ function _init()
  gcon={rmax=26}
  players={}
  goals={}
- for i=1,ceil(difficulty/5) do
+ for i=1,ceil(difficulty/10) do
   players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
   goals[i]=goal(i,flr(rnd(116))+3,flr(rnd(116))+3)
  end 
-
 end
 
 function _update60()
@@ -76,10 +75,11 @@ function _update60()
 end
 
 function _draw()
- cls(2)
+ cls(0)
  foreach(players,drawplayer)
  foreach(goals,drawgoal)
- print(status,8,8)
+ --comment
+ --print(status,8,8)
 end
 
 function player(id,x,y)
@@ -99,16 +99,22 @@ p.spd=function(dt) return pcon.spd*dt end
 return p
 end
 
-function goal(id,x,y,r)
+function goal(id)
  g={}
  g.id=id
- g.x=x
- g.y=y
- g.r=gcon.rmax-difficulty+1
+ g.r=max(gcon.rmax-difficulty+1,20)
  g.rsqrd=g.r*g.r
+ repeat
+  g.x=gpos(g)
+  g.y=gpos(g)
+ until not playeringoal(g,players[id])
  g.col=pcon.col[id]
  g.done=false
  return g
+end
+
+function gpos(g)
+ return flr(rnd(127-brdr*2-g.r*2))+g.r+brdr
 end
 
 function rnddir()
