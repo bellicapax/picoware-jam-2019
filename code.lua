@@ -15,8 +15,8 @@ function _init()
  oneliner="Reach the goals! 🅾️"
  
  -- add a personal touch ◆
- outer_frame_color=2
- inner_frame_color=8
+ outer_frame_color=7
+ inner_frame_color=6
 
  --[[
   set status variable to inform
@@ -35,7 +35,7 @@ function _init()
  players={}
  goals={}
  for i=1,ceil(difficulty/10) do
-  players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
+  players[i]=player(i)
   goals[i]=goal(i,flr(rnd(116))+3,flr(rnd(116))+3)
  end 
 end
@@ -75,22 +75,22 @@ function _update60()
 end
 
 function _draw()
- cls(0)
+ cls(5)
  foreach(players,drawplayer)
  foreach(goals,drawgoal)
  --comment
  --print(status,8,8)
 end
 
-function player(id,x,y)
+function player(id)
 p={}
 p.id=id
 p.color=pcon.col[id]
 p.spr=32
 p.sx=p.spr%16*8
 p.sy=flr(p.spr/16)*8
-p.x=x
-p.y=y
+p.x=rndpos(32)
+p.y=rndpos(32)
 p.a=0
 p.dir=rnddir()
 p.btn=pcon.btn[id]
@@ -103,10 +103,11 @@ function goal(id)
  g={}
  g.id=id
  g.r=max(gcon.rmax-difficulty+1,20)
+ g.d=g.r*2
  g.r2=g.r*g.r
  for i=1,100 do
-  g.x=gpos(g)
-  g.y=gpos(g)
+  g.x=rndpos(g.d)
+  g.y=rndpos(g.d)
   if(playeroutcirc(g.x,g.y,g.r2,players[id])) then break end
  end
  g.col=pcon.col[id]
@@ -114,8 +115,8 @@ function goal(id)
  return g
 end
 
-function gpos(g)
- return flr(rnd(127-brdr*2-g.r*2))+g.r+brdr
+function rndpos(w)
+ return flr(rnd(127-brdr*2-w))+w/2+brdr
 end
 
 function rnddir()
