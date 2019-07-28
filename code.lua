@@ -10,9 +10,9 @@ difficulty = 1
 ]]--
 function _init()
  -- these are required!
- name="Space Teleport!"
+ name="JumpShip!"
  made_by="@bellicapax"
- oneliner="Reach the goals! 🅾️"
+ oneliner="Teleport! 🅾️"
  
  -- add a personal touch ◆
  outer_frame_color=7
@@ -28,13 +28,15 @@ function _init()
  over=false
  brdr=3
  t=0 
+ diffjump=8
+ thisdiff=ceil(difficulty/diffjump)
  
  -- player
- pcon={spd=140,aspd=200,col={9,12,11,8,14},btn={4,5,2,0,1},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
- gcon={rmax=26}
+ pcon={spd=140,aspd=200,col={9,12,11,8,14},btn={4,5,2,0,1}}
+ gcon={r={26,26,24,24,22,22,20,20}}
  players={}
  goals={}
- for i=1,ceil(difficulty/10) do
+ for i=1,thisdiff do
   players[i]=player(i)
   goals[i]=goal(i,flr(rnd(116))+3,flr(rnd(116))+3)
  end 
@@ -102,7 +104,7 @@ end
 function goal(id)
  g={}
  g.id=id
- g.r=max(gcon.rmax-difficulty+1,20)
+ g.r=gcon.r[difficulty-(thisdiff-1)*diffjump]
  g.d=g.r*2
  g.r2=g.r*g.r
  for i=1,100 do
