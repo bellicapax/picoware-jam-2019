@@ -1,8 +1,8 @@
-disable_preview = true
+--disable_preview = true
 
 
 -- 1..15
-difficulty = 1
+difficulty = 4
 
 --[[
  set all of your variables
@@ -31,7 +31,6 @@ function _init()
  -- player
  pcon={spd=60,aspd=60,col={9,12,11,8,14},btn={4,5,0,1,2},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
  players={}
- local nplayers=difficulty%5
  for i=1,ceil(difficulty/3) do
   players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
  end 
@@ -69,6 +68,7 @@ end
 function _draw()
  cls(2)
  foreach(players,drawplayer)
+ print(status,8,8)
 end
 
 function player(id,x,y)
@@ -111,6 +111,12 @@ function updateplayer(dt,p)
    p.x=p.cur.x
    p.y=p.cur.y 
    p.cur=nil
+   for op in all(players) do
+    if playercoll(op,p) then
+     endgame()
+     break
+    end
+   end
   end
   p.a+=1/360*dt*pcon.aspd
   p.a=p.a%1
@@ -128,7 +134,15 @@ function movecursor(dt,p)
 end
 
 function isonscrn(x,y)
- return x>-1 and x<121 and y>-1 and y<121 
+ return x>2 and x<118 and y>2 and y<118 
+end
+
+function playercoll(p1,p2)
+ return p1.id!=p2.id and (abs(p1.x-p2.x)<8 and abs(p1.y-p2.y)<8)
+end
+
+function endgame()
+ status="lost"
 end
 
 function drawplayer(p)
