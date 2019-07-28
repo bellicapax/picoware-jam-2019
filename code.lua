@@ -24,15 +24,19 @@ function _init()
  
   status="won" / status="lost"
  ]]--
- status="won"
+ status="lost"
+ over=false
 
  t=0 
  
  -- player
  pcon={spd=120,aspd=180,col={9,12,11,8,14},btn={4,5,0,1,2},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
+ gcon={rmax=26}
  players={}
+ goals={}
  for i=1,ceil(difficulty/3) do
   players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
+  goals[i]=goal(i,flr(rnd(116))+3,flr(rnd(116))+3)
  end 
 
 end
@@ -60,14 +64,21 @@ function _update60()
   and the game is fully drawn
   on the screen
  ]]--
- if not transition_done then return end
+ if not transition_done or over then return end
  
  foreach(players,function(p) updateplayer(dt,p) end)
+ local won=true
+ for g in all(goals) do
+  updategoal(g)
+  won=won and g.done
+ end
+ if(won) then win() end
 end
 
 function _draw()
  cls(2)
  foreach(players,drawplayer)
+ foreach(goals,drawgoal)
  print(status,8,8)
 end
 
@@ -88,6 +99,18 @@ p.spd=function(dt) return pcon.spd*dt end
 return p
 end
 
+function goal(id,x,y,r)
+ g={}
+ g.id=id
+ g.x=x
+ g.y=y
+ g.r=gcon.rmax-difficulty+1
+ g.rsqrd=g.r*g.r
+ g.col=pcon.col[id]
+ g.done=false
+ return g
+end
+
 function rnddir()
  return flr(rnd(2))==0 and -1 or 1
 end
@@ -103,7 +126,7 @@ function cursor(x,y)
 end
 
 function updateplayer(dt,p)  
- if (status=="lost") return
+ if (over) return
  
  if(btn(p.btn)) then
   if(p.cur) then
@@ -118,7 +141,7 @@ function updateplayer(dt,p)
    p.cur=nil
    for op in all(players) do
     if playercoll(op,p) then
-     endgame()
+     lose()
      break
     end
    end
@@ -146,8 +169,24 @@ function playercoll(p1,p2)
  return p1.id!=p2.id and (abs(p1.x-p2.x)<8 and abs(p1.y-p2.y)<8)
 end
 
-function endgame()
+function lose()
  status="lost"
+ over=true
+end
+
+function win()
+ status="won"
+ over=true
+end
+
+function updategoal(g)
+ for p in all(players) do
+  if(p.id==g.id and magsqrd(g.x,g.y,p.x,p.y)<=g.rsqrd) then g.done=true end
+ end
+end
+
+function magsqrd(a,b,x,y)
+ return (x-a)*(x-a)+(y-b)*(y-b)
 end
 
 function drawplayer(p)
@@ -157,6 +196,10 @@ function drawplayer(p)
  end
  --comment
  --print(p.a,p.x,p.y+8)
+end
+
+function drawgoal(g)
+ circ(g.x,g.y,g.r,g.col)
 end
 
 function rspr(sx,sy,x,y,a,w,col)
