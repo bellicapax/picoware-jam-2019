@@ -1,8 +1,8 @@
-disable_preview = true
+--disable_preview = true
 
 
 -- 1..15
-difficulty = 4
+difficulty = 1
 
 --[[
  set all of your variables
@@ -10,9 +10,9 @@ difficulty = 4
 ]]--
 function _init()
  -- these are required!
- name="survive in space"
+ name="Space teleport!"
  made_by="@bellicapax"
- oneliner="teleport! 🅾️"
+ oneliner="Reach the goals! 🅾️"
  
  -- add a personal touch ◆
  outer_frame_color=12
@@ -30,11 +30,11 @@ function _init()
  t=0 
  
  -- player
- pcon={spd=120,aspd=180,col={9,12,11,8,14},btn={4,5,0,1,2},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
+ pcon={spd=140,aspd=200,col={9,12,11,8,14},btn={4,5,2,0,1},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
  gcon={rmax=26}
  players={}
  goals={}
- for i=1,ceil(difficulty/3) do
+ for i=1,ceil(difficulty/5) do
   players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
   goals[i]=goal(i,flr(rnd(116))+3,flr(rnd(116))+3)
  end 
@@ -126,8 +126,6 @@ function cursor(x,y)
 end
 
 function updateplayer(dt,p)  
- if (over) return
- 
  if(btn(p.btn)) then
   if(p.cur) then
     movecursor(dt,p)
@@ -181,8 +179,12 @@ end
 
 function updategoal(g)
  for p in all(players) do
-  if(p.id==g.id and magsqrd(g.x,g.y,p.x,p.y)<=g.rsqrd) then g.done=true end
+  if(p.id==g.id and playeringoal(g,p)) then g.done=true end
  end
+end
+
+function playeringoal(g,p)
+ return magsqrd(g.x,g.y,p.x,p.y)<=g.rsqrd and magsqrd(g.x,g.y,p.x,p.y+8)<=g.rsqrd and magsqrd(g.x,g.y,p.x+8,p.y)<=g.rsqrd and magsqrd(g.x,g.y,p.x+8,p.y+8)<=g.rsqrd
 end
 
 function magsqrd(a,b,x,y)
