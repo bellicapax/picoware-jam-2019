@@ -80,8 +80,7 @@ function _draw()
  cls(5)
  foreach(players,drawplayer)
  foreach(goals,drawgoal)
- --comment
- --print(status,8,8)
+ if over then _printc(status.."!") end
 end
 
 function player(id)
@@ -125,7 +124,7 @@ function rnddir()
  return flr(rnd(2))==0 and -1 or 1
 end
 
-function cursor(x,y)
+function cur(x,y)
  c={}
  c.x=x
  c.y=y
@@ -138,9 +137,9 @@ end
 function updateplayer(dt,p)  
  if(btn(p.btn)) then
   if(p.cur) then
-    movecursor(dt,p)
+    movecur(dt,p)
   else
-   p.cur=cursor(p.x,p.y)
+   p.cur=cur(p.x,p.y)
   end
  else
   if(p.cur) then
@@ -159,7 +158,7 @@ function updateplayer(dt,p)
  end
 end
 
-function movecursor(dt,p)
+function movecur(dt,p)
     local ang=(p.a+.5)%1
     local dx,dy=sin(ang)*p.spd(dt), cos(ang)*p.spd(dt)
     local nx,ny=p.cur.x+dx, p.cur.y+dy
@@ -220,8 +219,6 @@ function drawplayer(p)
  if(p.cur) then
   rspr(p.cur.sx,p.cur.sy,p.cur.x,p.cur.y,0,1,p.color)
  end
- --comment
- --print(p.a,p.x,p.y+8)
 end
 
 function drawgoal(g)
