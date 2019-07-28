@@ -1,4 +1,4 @@
---disable_preview = true
+disable_preview = true
 
 
 -- 1..15
@@ -29,7 +29,7 @@ function _init()
  t=0 
  
  -- player
- pcon={spd=60,aspd=60,col={9,12,11,8,14},btn={4,5,0,1,2},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
+ pcon={spd=120,aspd=180,col={9,12,11,8,14},btn={4,5,0,1,2},spw={{x=31,y=31},{x=95,y=31},{x=31,y=95},{x=95,y=95},{x=63,y=63}}}
  players={}
  for i=1,ceil(difficulty/3) do
   players[i]=player(i,pcon.spw[i].x,pcon.spw[i].y)
@@ -81,10 +81,15 @@ p.sy=flr(p.spr/16)*8
 p.x=x
 p.y=y
 p.a=0
+p.dir=rnddir()
 p.btn=pcon.btn[id]
 p.cur=nil
 p.spd=function(dt) return pcon.spd*dt end
 return p
+end
+
+function rnddir()
+ return flr(rnd(2))==0 and -1 or 1
 end
 
 function cursor(x,y)
@@ -118,7 +123,7 @@ function updateplayer(dt,p)
     end
    end
   end
-  p.a+=1/360*dt*pcon.aspd
+  p.a+=p.dir*(1/360*dt*pcon.aspd)
   p.a=p.a%1
  end
 end
@@ -150,7 +155,8 @@ function drawplayer(p)
  if(p.cur) then
   rspr(p.cur.sx,p.cur.sy,p.cur.x,p.cur.y,0,1,p.color)
  end
---  print(p.a,p.x,p.y+8)
+ --comment
+ --print(p.a,p.x,p.y+8)
 end
 
 function rspr(sx,sy,x,y,a,w,col)
