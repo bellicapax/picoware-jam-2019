@@ -9,10 +9,15 @@ difficulty = 1
  inside the init function!
 ]]--
 function _init()
+ --difficulty
+ diffjump=8
+ thisdiff=ceil(difficulty/diffjump)
+
  -- these are required!
  name="JumpShip!"
  made_by="@bellicapax"
  oneliner="Teleport! 🅾️"
+ if thisdiff==2 then oneliner = oneliner.."❎" end
  
  -- add a personal touch ◆
  outer_frame_color=7
@@ -28,8 +33,7 @@ function _init()
  over=false
  brdr=3
  t=0 
- diffjump=8
- thisdiff=ceil(difficulty/diffjump)
+
  
  -- player
  pcon={spd=140,aspd=200,col={9,12,11,8,14},btn={4,5,2,0,1}}
