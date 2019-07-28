@@ -10,7 +10,7 @@ difficulty = 1
 ]]--
 function _init()
  -- these are required!
- name="Space teleport!"
+ name="Space Teleport!"
  made_by="@bellicapax"
  oneliner="Reach the goals! 🅾️"
  
@@ -103,11 +103,12 @@ function goal(id)
  g={}
  g.id=id
  g.r=max(gcon.rmax-difficulty+1,20)
- g.rsqrd=g.r*g.r
- repeat
+ g.r2=g.r*g.r
+ for i=1,100 do
   g.x=gpos(g)
   g.y=gpos(g)
- until not playeringoal(g,players[id])
+  if(playeroutcirc(g.x,g.y,g.r2,players[id])) then break end
+ end
  g.col=pcon.col[id]
  g.done=false
  return g
@@ -185,12 +186,26 @@ end
 
 function updategoal(g)
  for p in all(players) do
-  if(p.id==g.id and playeringoal(g,p)) then g.done=true end
+  if(p.id==g.id and playerincirc(g.x,g.y,g.r2,p)) then g.done=true end
  end
 end
 
-function playeringoal(g,p)
- return magsqrd(g.x,g.y,p.x,p.y)<=g.rsqrd and magsqrd(g.x,g.y,p.x,p.y+8)<=g.rsqrd and magsqrd(g.x,g.y,p.x+8,p.y)<=g.rsqrd and magsqrd(g.x,g.y,p.x+8,p.y+8)<=g.rsqrd
+function pbnds(p)
+ return {{p.x,p.y},{p.x+8,p.y},{p.x,p.y+8},{p.x+8,p.y+8}}
+end
+
+function playerincirc(x,y,r2,p)
+ for b in all(pbnds(p)) do
+  if magsqrd(x,y,b[1],b[2])>r2 then return false end
+ end
+ return true
+end
+
+function playeroutcirc(x,y,r2,p)
+ for b in all(pbnds(p)) do
+  if magsqrd(x,y,b[1],b[2])<=r2 then return false end
+ end
+ return true
 end
 
 function magsqrd(a,b,x,y)
